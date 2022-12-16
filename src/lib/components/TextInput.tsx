@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 type TextInputProps = {
@@ -16,7 +16,7 @@ export const TextInput: React.FunctionComponent<TextInputProps> = ({
 	value,
 	onChangeText,
 }) => {
-	const inputRef = React.createRef<HTMLTextAreaElement>();
+	const inputRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
 		if (!disabled && autoFocus && inputRef.current) {
