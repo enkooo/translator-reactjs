@@ -24,7 +24,7 @@ export const App = () => {
 			return (
 				<FetchLoaderContainer>
 					<Loader>
-						<LoaderText>{T.screen.translator.loading}</LoaderText>
+						<LoaderText>{T.components.app.loading}</LoaderText>
 					</Loader>
 				</FetchLoaderContainer>
 			);
@@ -33,7 +33,7 @@ export const App = () => {
 		if (hasError) {
 			return (
 				<CenterContainer>
-					<Message withButton message={T.screen.translator.error} onClick={() => getSupportedLanguages()} />
+					<Message withButton message={T.components.app.error} onClick={() => getSupportedLanguages()} />
 				</CenterContainer>
 			);
 		}
@@ -41,7 +41,7 @@ export const App = () => {
 		if (languages.length === 0) {
 			return (
 				<CenterContainer>
-					<Message message={T.screen.translator.empty} />
+					<Message message={T.components.app.empty} />
 				</CenterContainer>
 			);
 		}
