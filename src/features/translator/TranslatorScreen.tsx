@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import styled from 'styled-components';
 import { Confidence, ExchangeLanguage, Loader, SelectLanguage, TextCounter, TextInput } from '../../lib/components';
 import { APP_CONFIG } from '../../lib/config';
 import { useTranslations } from '../../lib/hooks';
-import { Language, LanguageCode } from '../../lib/models';
+import { AutoDetectedLanguage, Language, LanguageCode } from '../../lib/models';
+import { useAutoDetectLanguage } from './actions';
 import { SelectedLanguages } from './types';
 
 type TranslatorScreenProps = {
@@ -13,10 +15,25 @@ type TranslatorScreenProps = {
 export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = ({ languages }) => {
 	const T = useTranslations();
 	const [query, setQuery] = useState<string>('');
+	const [autoDetectedLanguage, setAutoDetectedLanguage] = useState<AutoDetectedLanguage>();
 	const [selectedLanguages, setSelectedLanguages] = useState<SelectedLanguages>({
 		source: LanguageCode.Auto,
 		target: LanguageCode.English,
 	});
+	const {
+		isLoading: isDectingLanguage,
+		hasError: hasErrorDetectingLanguage,
+		fetch: autoDetectLanguage,
+	} = useAutoDetectLanguage(setAutoDetectedLanguage);
+	const debouncedAutoDetectLanguage = useDebouncedCallback((debouncedQuery) => {
+		if (debouncedQuery.length < 5) {
+			return;
+		}
+
+		if (selectedLanguages.source === LanguageCode.Auto) {
+			autoDetectLanguage(debouncedQuery);
+		}
+	}, 1000);
 
 	return (
 		<Container>
@@ -37,17 +54,28 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
 						autoFocus
 						value={query}
 						onChangeText={(newQuery) => {
-							if (newQuery.length <= APP_CONFIG.TEXT_INPUT_LIMIT) {
-								setQuery(newQuery);
+							if (newQuery.length > APP_CONFIG.TEXT_INPUT_LIMIT) {
+								return;
 							}
+
+							setQuery(newQuery);
+							debouncedAutoDetectLanguage(newQuery);
 						}}
 						placeholder={T.screens.translator.sourceInputPlaceholder}
 					/>
-					<LoaderContainer>
-						<Loader />
-					</LoaderContainer>
+					<LoaderContainer>{isDectingLanguage && <Loader />}</LoaderContainer>
 					<InputFooter>
-						<Confidence />
+						<Confidence
+							hasError={hasErrorDetectingLanguage && selectedLanguages.source === LanguageCode.Auto}
+							autoDetectedLanguage={autoDetectedLanguage}
+							onClick={() => {
+								setSelectedLanguages((prevState) => ({
+									...prevState,
+									source: autoDetectedLanguage?.language as LanguageCode,
+								}));
+								setAutoDetectedLanguage(undefined);
+							}}
+						/>
 						<TextCounter counter={query.length} limit={APP_CONFIG.TEXT_INPUT_LIMIT} />
 					</InputFooter>
 				</InputContainer>

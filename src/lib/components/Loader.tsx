@@ -32,4 +32,5 @@ const ChildrenContainer = styled.div`
 
 const LoaderContainer = styled.div`
 	width: 100%;
+	height: 2px;
 `;
