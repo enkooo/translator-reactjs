@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import React from 'react';
 import styled from 'styled-components';
 import { Confidence, ExchangeLanguage, Loader, SelectLanguage, TextCounter, TextInput } from '../../lib/components';
 import { APP_CONFIG } from '../../lib/config';
 import { useTranslations } from '../../lib/hooks';
-import { AutoDetectedLanguage, Language, LanguageCode } from '../../lib/models';
-import { useAutoDetectLanguage, useTranslateText } from './actions';
-import { SelectedLanguages } from './types';
+import { Language, LanguageCode } from '../../lib/models';
+import { useLibreTranslate } from './useLibreTranslate';
 
 type TranslatorScreenProps = {
 	languages: Array<Language>;
@@ -14,32 +12,20 @@ type TranslatorScreenProps = {
 
 export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = ({ languages }) => {
 	const T = useTranslations();
-	const [translatedText, setTranslatedText] = useState<string>('');
-	const [query, setQuery] = useState<string>('');
-	const [autoDetectedLanguage, setAutoDetectedLanguage] = useState<AutoDetectedLanguage>();
-	const [selectedLanguages, setSelectedLanguages] = useState<SelectedLanguages>({
-		source: LanguageCode.Auto,
-		target: LanguageCode.English,
-	});
 	const {
-		isLoading: isDectingLanguage,
-		hasError: hasErrorDetectingLanguage,
-		fetch: autoDetectLanguage,
-	} = useAutoDetectLanguage(setAutoDetectedLanguage);
-	const {
-		isLoading: isTranslatingText,
-		hasError: hasErrorTranslatingText,
-		fetch: translateText,
-	} = useTranslateText(setTranslatedText);
-	const debouncedAction = useDebouncedCallback((debouncedQuery) => {
-		if (debouncedQuery.length < 5) {
-			return;
-		}
-
-		selectedLanguages.source === LanguageCode.Auto
-			? autoDetectLanguage(debouncedQuery)
-			: translateText(debouncedQuery, selectedLanguages);
-	}, 1000);
+		query,
+		setQuery,
+		autoDetectedLanguage,
+		debouncedAction,
+		hasErrorDetectingLanguage,
+		hasErrorTranslatingText,
+		isDectingLanguage,
+		isTranslatingText,
+		translatedText,
+		selectedLanguages,
+		setSelectedLanguages,
+		setAutoDetectedLanguage,
+	} = useLibreTranslate();
 
 	return (
 		<Container>
@@ -127,6 +113,15 @@ const TranslatorContainer = styled.div`
 	flex-direction: row;
 	justify-content: space-around;
 	margin-top: 50px;
+
+	@media (min-width: ${({ theme }) => theme.media.sm}px) {
+		justify-content: center;
+	}
+
+	@media (max-width: ${({ theme }) => theme.media.sm}px) {
+		flex-direction: column;
+		align-items: center;
+	}
 `;
 
 const InputContainer = styled.div`

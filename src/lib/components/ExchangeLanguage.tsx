@@ -13,13 +13,26 @@ export const ExchangeLanguage: React.FunctionComponent<ExchangeLanguageProps> = 
 	</ExchangeContainer>
 );
 
-const Exchange = styled.img`
-	cursor: pointer;
+const ExchangeContainer = styled.div`
 	width: 22px;
 	height: 22px;
+
+	@media (min-width: ${({ theme }) => theme.media.sm}px) {
+		width: 100px;
+		display: flex;
+		justify-content: center;
+	}
+
+	@media (max-width: ${({ theme }) => theme.media.sm}px) {
+		height: 100px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 `;
 
-const ExchangeContainer = styled.div`
+const Exchange = styled.img`
+	cursor: pointer;
 	width: 22px;
 	height: 22px;
 `;
