@@ -30,7 +30,7 @@ export const Confidence: React.FunctionComponent<ConfidenceProps> = ({
 			Object.entries(LanguageCode).find(([, languageCode]) => language === languageCode) || [];
 
 		return detectedLanguage ? `(${detectedLanguage})` : undefined;
-	}, []);
+	}, [language]);
 
 	return (
 		<Container>
