@@ -56,7 +56,7 @@ export const useAutoDetectLanguage = (onSuccess: (autoDetectedLanguage: AutoDete
 					q: query,
 				}),
 				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
+					'Content-Type': 'application/json',
 				},
 			})
 				.then((response) => {
@@ -93,7 +93,7 @@ export const useTranslateText = (onSuccess: (translatedText: string) => void) =>
 					format: 'text',
 				}),
 				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
+					'Content-Type': 'application/json',
 				},
 			})
 				.then((response) => {

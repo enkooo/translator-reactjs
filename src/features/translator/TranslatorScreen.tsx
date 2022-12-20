@@ -80,6 +80,7 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
 									source: autoDetectedLanguage?.language as LanguageCode,
 								}));
 								setAutoDetectedLanguage(undefined);
+								debouncedAction(query);
 							}}
 						/>
 						<TextCounter counter={query.length} limit={APP_CONFIG.TEXT_INPUT_LIMIT} />
